@@ -13,8 +13,4 @@ C++:
  Time: 0.5156974792480469 
  Shape full df: (5237128, 18) 
  Shape of matching phrases: (7619, 18) ## NOT SURE WHY SO MUCH HIGHER
-AHOCORASICK: 
- Time: 1.9668328762054443 
- Shape full df: (5237128, 18) 
- Shape of matching phrases: (2886, 18)
 ```
