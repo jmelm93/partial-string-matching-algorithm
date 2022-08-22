@@ -5,6 +5,7 @@ from string_search.string_match import string_match
 
 def job(input, match):    
     #DEFAULT IMPLEMENTATION
+    col = ";".join(list(input["Keyword"].str.lower()))
     start_time = time.time()
     matching_phrases = [string_match(input, 'Keyword', i) for i in match['match']]
     end_time = time.time()
@@ -21,6 +22,15 @@ def job(input, match):
     
     df = pd.concat(matching_phrases)
     print("Boyer-Moore shape: {}".format(df.shape))
+
+    # === Collect col ===
+    start_time = time.time()
+    matching_phrases = [string_match(input, 'Keyword', i, type="BM2", col=col) for i in match['match']]
+    end_time = time.time()
+    print("Boyer-Moore 2: {}".format(end_time - start_time))
+    
+    df = pd.concat(matching_phrases)
+    print("Boyer-Moore 2 shape: {}".format(df.shape))
 
     
     # AHOCORASICK - https://pypi.org/project/pyahocorasick/
