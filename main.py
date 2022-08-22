@@ -3,9 +3,23 @@ import pandas as pd
 
 from string_search.string_match import string_match
 
-def job(input, match):    
-    #DEFAULT IMPLEMENTATION
+import os
+import numpy as np
+from subprocess import Popen, STDOUT, PIPE
+
+def job_cpp(n_patt, n_text):
+    p = Popen(["./main"], stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True)
+
+    out,err = p.communicate()
+    mtx = np.array([c=='1' for c in out]).reshape(n_patt, n_text)
+    return mtx
+
+def job(input, match):
     col = ";".join(list(input["Keyword"].str.lower()))
+    input['Keyword'] = input["Keyword"].str.lower()
+    match['match'] = match['match'].str.lower()
+
+    #DEFAULT IMPLEMENTATION
     start_time = time.time()
     matching_phrases = [string_match(input, 'Keyword', i) for i in match['match']]
     end_time = time.time()
@@ -32,6 +46,16 @@ def job(input, match):
     df = pd.concat(matching_phrases)
     print("Boyer-Moore 2 shape: {}".format(df.shape))
 
+    # === C++ ===
+    start_time = time.time()
+    mtx = job_cpp(len(match), len(input))
+    end_time = time.time()
+    print("C++: {}".format(end_time - start_time))
+
+    # The computaion is done, this is only to collect the pandas object [this part is quite slow... ]
+    matching_phrases = [input.assign(match_exist=mtx[i], match_phrase=match['match'][i]) for i in range(len(match['match']))]
+    df = pd.concat(matching_phrases)
+    print("C++ shape: {}".format(df.shape))
     
     # AHOCORASICK - https://pypi.org/project/pyahocorasick/
     start_time = time.time()
